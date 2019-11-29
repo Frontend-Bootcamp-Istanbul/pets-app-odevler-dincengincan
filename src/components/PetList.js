@@ -4,6 +4,8 @@ import {getPets} from "../constants";
 import {stringContains} from "../helpers";
 
 
+//render içerisinde, const pets kısmında neden divleri kapsayan [] kullandık?
+
 class PetList extends React.Component{
     breed;
     constructor(props){
@@ -20,9 +22,15 @@ class PetList extends React.Component{
             this.setState({
                 _pets: data,
                 pets: data,
-                yukleniyor: false
+                yukleniyor: false,
+                index: 0
             })
         })
+        window.addEventListener("scroll", this.handleScroll);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("scroll", this.handleScroll);
     }
 
     componentDidUpdate(prevProps) {
@@ -52,15 +60,31 @@ class PetList extends React.Component{
         }
     }
 
+    
+    handleScroll = () => {
+        const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+        const body = document.body;
+        const html = document.documentElement;
+        const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+        const windowBottom = windowHeight + window.pageYOffset;
+        if (windowBottom >= docHeight) {
+            setTimeout(this.setState({
+                index: this.state.index+3
+            }), 5000) 
+        } 
+      }
+
 
     render(){
+        const newList = this.state.pets.slice(0, this.state.index+3)
         const Yukleniyor = <div>Yukleniyor</div>;
         const EmptyPets = <div>Bulunamadı</div>;
-        const Pets =  [<h3>Gösterilen Pet Sayısı: 5</h3>,<div className="row">
+        const Pets =  [<h3>Gösterilen Pet Sayısı: {newList.length} </h3>,<div className="row">
             {
-                this.state.pets.map((pet) => {
-                    return <Pet key={Math.random()} {...pet} />
-                })
+                newList.map(pet=> {
+                    return <Pet  key={Math.random()}   {...pet}
+                                 />
+                })   
             }
         </div>];
         if(this.state.yukleniyor){

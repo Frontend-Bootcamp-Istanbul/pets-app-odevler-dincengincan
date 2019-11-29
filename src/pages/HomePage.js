@@ -1,6 +1,6 @@
 import React from 'react';
 import {Sidebar, PetList} from "../components";
-
+import {DetailsPage} from "../pages"
 
 class HomePage extends React.Component{
     constructor(props){
